@@ -32,6 +32,13 @@ jobs:
           push: true
           tags: ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}:v${{ github.run_number }}
 
+      - name: Configure AWS credentials for ECS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_ECS }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+
       - name: Update ECS Service
         run: |
           aws ecs update-service \
