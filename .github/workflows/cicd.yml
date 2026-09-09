@@ -24,6 +24,8 @@ jobs:
       - uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build & push images
-        content: .
-        push : true
-        tags: ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ ECR_REPOSITORY }}:v${{ github.run_number }}
+        uses: docker/build-push-action@v6
+          with:
+            content: .
+            push : true
+            tags: ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ ECR_REPOSITORY }}:v${{ github.run_number }}
