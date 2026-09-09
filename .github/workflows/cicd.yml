@@ -1,4 +1,4 @@
-name: CICD pipeline with Github Actions + ECR + ECS
+name: Build & Push an image to ECR
 
 on: 
   push:
@@ -10,7 +10,7 @@ permissions:
   packages: write
 
 jobs:
-  pipeline:
+  build:
     runs-on: ubuntu-latest
     steps:
 
@@ -19,7 +19,7 @@ jobs:
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: us-east-1
+          aws-region: ${{ vars.AWS_REGION }}
 
       - uses: aws-actions/amazon-ecr-login@v2
 
@@ -29,3 +29,10 @@ jobs:
           content: .
           push : true
           tags: ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}:v${{ github.run_number }}
+
+     - name: Update ECS Service
+       run: |
+         aws ecs update-service \
+           --cluster myapp-cluster \
+           --service myapp-service \
+           --force-new-deployment
